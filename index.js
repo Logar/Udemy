@@ -29,15 +29,10 @@ const cartState = function() {
     return cart.push(item)
   }
   function removeItem(find) {
-    let index = -1
-    cart.forEach(function(item, index2){
-      if (item.name === find.name) {
-        index = index2
-      }
+    return cart.map(function(item, index2) {
+      if (item.name === find.name)
+        return cart.splice(index2, 1)
     })
-    if (index > -1) {
-      return cart.splice(index, 1)
-    }
   }
   return {
     getCart,
