@@ -1,4 +1,14 @@
 // Amazon Shopping Cart
+// Implement a cart feature
+// 1. Add items to a cart
+// 2. Add 3% tax to an item
+// 3. Buy items: cart --> pruchases
+// 4. Empty cart
+
+// Bonus
+// Accepts refunds
+// Track user history
+
 const user = {
   name: 'Kim',
   active: true,
@@ -9,22 +19,32 @@ const user = {
 
 const tax = 0.03
 
-// Adds item to cart
-const addItem = function(item) {
-  user.cart.push(item)
-  updateHistory(`${user.name} added ${item.name}`)
-}
-
-// Remove item from cart
-const removeItem = function(item) {
-  const tempCart = []
-  for(let i=0; i < user.cart.length; i++) {
-    if (user.cart[i].name !== item.name) {
-      tempCart.push(user.cart[i])
+// Cart State
+const cartState = function() {
+  let cart = [...user.cart]
+  function getCart() {
+    return cart
+  }
+  function addItem(item) {
+    return cart.push(item)
+  }
+  function removeItem(find) {
+    let index = -1
+    cart.forEach(function(item, index2){
+      if (item.name === find.name) {
+        index = index2
+      }
+    })
+    if (index > -1) {
+      return cart.splice(index, 1)
     }
   }
-  user.cart = tempCart
-  updateHistory(`${user.name} removed ${item.name}`)
+  return {
+    getCart,
+    addItem,
+    removeItem
+  }
+  // updateHistory(`${user.name} added ${item.name}`)
 }
 
 // Adds sales tax
@@ -35,6 +55,10 @@ const addSalesTax = function(item) {
     price: price
   }
   return item
+}
+
+const print = function(obj) {
+  console.log(obj)
 }
 
 // Purchases items and empty cart
@@ -49,7 +73,7 @@ const purchaseItems = function() {
 
 // Empties cart
 const emptyCart = function() {
-  user.cart = []
+  return []
 }
 
 // Updates user history
@@ -57,21 +81,13 @@ const updateHistory = function(action) {
   user.history.push(action)
 }
 
-addItem({name: 'item1', price: 25.00})
-addItem({name: 'item2', price: 40.00})
-//console.log('After adding items', user)
-removeItem({name: 'item2'})
-console.log('After removing items', user)
-purchaseItems()
-console.log(user)
-
-
-// Implement a cart feature
-// 1. Add items to a cart
-// 2. Add 3% tax to an item
-// 3. Buy items: cart --> pruchases
-// 4. Empty cart
-
-// Bonus
-// Accepts refunds
-// Track user history
+(function() {
+  let cart = cartState()
+  cart.addItem({name: 'item1', price: 25.00})
+  cart.addItem({name: 'item2', price: 40.00})
+  print(cart.getCart())
+  
+  cart.removeItem({name: 'item2'})
+  print(cart.getCart())
+  //purchaseItems()
+}());
