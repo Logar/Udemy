@@ -38,9 +38,14 @@ const addSalesTax = function(price) {
 // Purchase module 
 const purchaseModule = (function () {
   function addPurchases(purchases, cart) {
-    return purchases.concat(cart.map(
-      item => (item.name, addSalesTax(item.price))
-    ))
+    return purchases.concat(
+      cart.map(function(item) {
+        return {
+          name: item.name,
+          price: addSalesTax(item.price)
+        }
+      })
+    )
   }
   return {
     addPurchases
