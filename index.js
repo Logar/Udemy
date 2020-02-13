@@ -32,7 +32,7 @@ const cartModule = (function () {
 // Adds sales tax
 const addSalesTax = function(price) {
   const tax = 0.03
-  return (tax * price) + price
+  return Math.ceil((tax * price + price) * 100) / 100
 }
 
 // Purchase module 
