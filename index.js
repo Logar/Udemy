@@ -9,80 +9,77 @@
 // Accepts refunds
 // Track user history
 
-const user = {
-  name: 'Kim',
-  active: true,
-  cart: [],
-  purchases: [],
-  history: []
-}
-
-const tax = 0.03
-
-// Cart State
-const cartState = function() {
-  let cart = [...user.cart]
-  function getCart() {
-    return cart
+// Cart Module
+const cartModule = (function () {
+  function addItem(cart, item) {
+    return cart.concat(item)
   }
-  function addItem(item) {
-    return cart.push(item)
+  function removeItem(cart, item) {
+    const found = cart.find(({name}) => name === item.name)
+    return cart.splice(cart.indexOf(found), 1)
   }
-  function removeItem(find) {
-    return cart.map(function(item, index2) {
-      if (item.name === find.name)
-        return cart.splice(index2, 1)
-    })
+  // Empties cart
+  function emptyCart(cart) {
+    return cart.splice(0, cart.length)
   }
   return {
-    getCart,
     addItem,
-    removeItem
+    removeItem,
+    emptyCart
   }
-  // updateHistory(`${user.name} added ${item.name}`)
-}
+}());
 
 // Adds sales tax
-const addSalesTax = function(item) {
-  let price = (tax * item.price) + item.price
-  var item = {
-    name: item.name,
-    price: price
+const addSalesTax = function(price) {
+  const tax = 0.03
+  return (tax * price) + price
+}
+
+// Purchase module 
+const purchaseModule = (function () {
+  function addPurchases(purchases, cart) {
+    return purchases.concat(cart.map(
+      item => (item.name, addSalesTax(item.price))
+    ))
   }
-  return item
-}
-
-const print = function(obj) {
-  console.log(obj)
-}
-
-// Purchases items and empty cart
-const purchaseItems = function() {
-  for(let i=0; i < user.cart.length; i++) {
-    let item = addSalesTax(user.cart[i])
-    user.purchases.push(item)
-    updateHistory(`${user.name} purchased ${item.name} at ${item.price}`)
+  return {
+    addPurchases
   }
-  emptyCart()
+}());
+
+// User history
+const userHistory = function() {
+  function addHistory(history, item) {
+    return history.concat([item])
+  }
+  return {
+    addHistory
+  }
 }
 
-// Empties cart
-const emptyCart = function() {
-  return []
-}
+(function () {
+  // private
+  const user = {
+    name: 'Kim',
+    active: true,
+    cart: [],
+    purchases: [],
+    history: []
+  }
+  let cart = [...user.cart]
+  let purchases = [...user.purchases]
 
-// Updates user history
-const updateHistory = function(action) {  
-  user.history.push(action)
-}
+  cart = cart.concat(
+    cartModule.addItem(cart, {name: 'item1', price: 25.40}),
+    cartModule.addItem(cart, {name: 'item2', price: 40.15}),
+    cartModule.addItem(cart, {name: 'item3', price: 5.99})
+  )
+  cartModule.removeItem(cart, {name: 'item2'})
 
-(function() {
-  let cart = cartState()
-  cart.addItem({name: 'item1', price: 25.00})
-  cart.addItem({name: 'item2', price: 40.00})
-  print(cart.getCart())
-  
-  cart.removeItem({name: 'item2'})
-  print(cart.getCart())
-  //purchaseItems()
+  console.log('Cart: ', cart)
+  purchases = purchases.concat(
+    purchaseModule.addPurchases(purchases, cart)
+  )
+  console.log('Purchases: ', purchases)
+  console.log('User: ', user)
 }());
